@@ -1,6 +1,6 @@
 # 🔌 Interfaces em Java — Sistema de Aluguel de Carros, Pedidos & Contratos
 
-Repositório criado para documentar os estudos e exercícios práticos sobre **Interfaces** em Java, comparando uma solução ruim sem interface e uma solução boa com interface, além de exercícios extras desenvolvidos de forma independente. Desenvolvidos com base no curso do professor Nélio Alves (Udemy).
+Repositório criado para documentar os estudos e exercícios práticos sobre **Interfaces** em Java. Desenvolvidos com base no curso do professor Nélio Alves (Udemy).
 
 ---
 
@@ -8,172 +8,85 @@ Repositório criado para documentar os estudos e exercícios práticos sobre **I
 
 ```
 src/
-├── ExInterfaceSolucaoRuim/
-│   ├── application/
-│   │   └── Main.java                      → Classe principal — solução sem interface
-│   └── model/
-│       ├── entities/
-│       │   ├── CarRental.java             → Entidade de aluguel de carro
-│       │   ├── Invoice.java               → Entidade de fatura
-│       │   └── Vehicle.java               → Entidade de veículo
-│       └── services/
-│           ├── BrazilTaxService.java      → Serviço de imposto brasileiro
-│           └── RentalService.java         → Serviço de aluguel — acoplado ao Brasil
-├── ExInterfaceSolucaoBoa/
-│   ├── application/
-│   │   └── Main.java                      → Classe principal — solução com interface
-│   └── model/
-│       ├── entities/
-│       │   ├── CarRental.java             → Entidade de aluguel de carro
-│       │   ├── Invoice.java               → Entidade de fatura
-│       │   └── Vehicle.java               → Entidade de veículo
-│       └── services/
-│           ├── TaxService.java            → Interface do serviço de imposto
-│           ├── BrazilTaxService.java      → Implementação brasileira da interface
-│           └── RentalService.java         → Serviço de aluguel — desacoplado
-├── ExInterface/
-│   ├── application/
-│   │   └── Main.java                      → Classe principal — sistema de pedidos
-│   └── model/
-│       ├── entities/
-│       │   ├── Order.java                 → Entidade de pedido
-│       │   └── Receipt.java               → Entidade de recibo
-│       └── services/
-│           ├── ShippingService.java       → Interface do serviço de frete
-│           ├── StandardShipping.java      → Implementação de frete padrão
-│           ├── ExpressShipping.java       → Implementação de frete expresso
-│           └── OrderService.java          → Serviço de pedido — desacoplado
-└── ExInterfaceFixacao/
-    ├── application/
-    │   └── Main.java                      → Classe principal — sistema de contratos
-    └── model/
-        ├── entities/
-        │   ├── Contract.java              → Entidade de contrato
-        │   └── Installment.java           → Entidade de parcela
-        └── services/
-            ├── OnlinePaymentService.java  → Interface do serviço de pagamento online
-            ├── PaypalService.java         → Implementação Paypal (1% juros + 2% taxa)
-            └── ContractService.java       → Serviço de contrato — desacoplado
+├── ExInterfaceSolucaoRuim/   → solução sem interface (acoplada)
+├── ExInterfaceSolucaoBoa/    → solução com interface (desacoplada)
+├── ExInterface/              → sistema de pedidos com frete
+├── ExInterfaceFixacao/       → sistema de contratos com parcelamento
+└── ExInterface2/             → sistema de pedidos com desconto (exercício independente)
 ```
+
+---
+
+## 🗂️ Exercícios
+
+### ExInterfaceSolucaoRuim / ExInterfaceSolucaoBoa — Aluguel de Carros
+Comparação direta entre solução acoplada e desacoplada. O `RentalService` na solução ruim conhece diretamente o `BrazilTaxService` — na boa, conhece apenas a interface `TaxService`. Para trocar o país basta passar outra implementação, sem tocar no serviço.
+
+### ExInterface — Sistema de Pedidos com Frete
+`OrderService` recebe um `ShippingService` via construtor e calcula o valor final do pedido. Duas implementações disponíveis: `StandardShipping` e `ExpressShipping`.
+
+### ExInterfaceFixacao — Sistema de Contratos
+`ContractService` recebe um `OnlinePaymentService` e processa um contrato parcelado aplicando juros simples mês a mês e taxa de pagamento sobre cada parcela:
+
+```
+Parcela 1: 200 + 1%×1 = 202 → 202 + 2% = 206.04
+Parcela 2: 200 + 1%×2 = 204 → 204 + 2% = 208.08
+Parcela 3: 200 + 1%×3 = 206 → 206 + 2% = 210.12
+```
+
+### ExInterface2 — Sistema de Pedidos com Desconto ⭐ novo
+Exercício desenvolvido de forma independente. O sistema lê um pedido com múltiplos itens, calcula o subtotal percorrendo a lista e aplica frete e desconto via interface `ShippingService`:
+
+```
+Item 1: Camiseta — qtd: 2 — R$ 59.90   → 119.80
+Item 2: Calça    — qtd: 1 — R$ 149.90  → 149.90
+Item 3: Boné     — qtd: 3 — R$ 39.90   →  119.70
+──────────────────────────────────────────────────
+Subtotal:  389.40
+Frete:      38.94  (10% — CorreiosService)
+Desconto:   19.47  (5%  — CorreiosService)
+Total:     408.87
+```
+
+Classes criadas: `OrderItem`, `Order`, `ShippingService` (interface), `CorreiosService`, `OrderService`, `Main`.
 
 ---
 
 ## 📚 O que aprendi
 
-### 🔹 Interface (`interface` e `implements`)
+**Interface como contrato** — define o que existe sem dizer como. `TaxService`, `ShippingService` e `OnlinePaymentService` garantem que qualquer implementação terá os métodos necessários.
 
-Uma interface é um contrato que define o que uma classe deve fazer, sem dizer como. No projeto de aluguel, `TaxService` define o método `tax(double amount)`. No projeto de pedidos, `ShippingService` define o método `freight(double basicPayment)`. No projeto de contratos, `OnlinePaymentService` define os métodos `interest(amount, months)` e `paymentFee(amount)` — qualquer classe que implementá-las é obrigada a fornecer sua própria lógica de cálculo.
-
-### 🔹 Por que usar interface
-
-Na solução ruim (`ExInterfaceSolucaoRuim`), o `RentalService` conhece diretamente o `BrazilTaxService` — trocar o país exige alterar o código do serviço de aluguel. Na solução boa, o `RentalService` conhece apenas a interface `TaxService` — para trocar o comportamento, basta passar uma implementação diferente, sem mexer em nada do serviço.
-
-O mesmo princípio se aplica ao `OrderService` e ao `ContractService`: nenhum deles sabe qual implementação concreta está usando — só sabem que receberão algo que cumpre o contrato da interface.
-
-### 🔹 Composição com interface
-
-Em vez de herdar comportamento, as classes recebem colaboradores via construtor — isso é composição. `RentalService` tem um `TaxService`. `OrderService` tem um `ShippingService`. `ContractService` tem um `OnlinePaymentService`. Cada um cuida da sua responsabilidade.
-
-### 🔹 Injeção de dependência via construtor
-
-A implementação concreta é decidida fora da classe, em tempo de execução:
+**Injeção de dependência via construtor** — a implementação concreta é decidida fora da classe, em tempo de execução:
 
 ```java
-// sistema de aluguel
-RentalService rs = new RentalService(pricePerHour, pricePerDay, new BrazilTaxService());
-
-// sistema de pedidos
-OrderService service = new OrderService(new StandardShipping());
-
-// sistema de contratos
-ContractService contractService = new ContractService(new PaypalService());
+ContractService cs = new ContractService(new PaypalService());
+OrderService os    = new OrderService(new CorreiosService());
 ```
 
-### 🔹 Processamento de parcelas com juros e taxa
+**Princípio Aberto/Fechado** — para adicionar um novo serviço de pagamento ou transportadora basta criar uma nova classe que implementa a interface, sem alterar o código existente.
 
-No `ContractService`, o método `processContract` divide o valor total pelo número de meses, aplica os juros simples mês a mês e sobre o resultado aplica a taxa de pagamento, gerando um `Installment` para cada parcela:
+**Acumulação em loop** — para calcular subtotais percorrendo listas de objetos:
 
 ```java
-double basicInstallment = contract.getTotalValue() / months;
-for (int i = 1; i <= months; i++) {
-    LocalDate dueDate = contract.getDate().plusMonths(i);
-    double withInterest = basicInstallment + onlinePaymentService.interest(basicInstallment, i);
-    double withFee = withInterest + onlinePaymentService.paymentFee(withInterest);
-    contract.getInstallments().add(new Installment(dueDate, withFee));
+double subtotal = 0;
+for (OrderItem item : order.getItems()) {
+    subtotal += item.getQuantity() * item.getUnitPrice();
 }
 ```
 
-### 🔹 Princípio da Responsabilidade Única (SRP)
-
-Cada classe tem um único motivo para mudar:
-
-- `RentalService` muda só se a lógica de aluguel mudar
-- `BrazilTaxService` muda só se o imposto brasileiro mudar
-- `ContractService` muda só se a lógica de parcelamento mudar
-- `PaypalService` muda só se as regras do Paypal mudarem
-
-### 🔹 Princípio Aberto/Fechado (OCP)
-
-Para adicionar um novo país, tipo de frete ou serviço de pagamento, basta criar uma nova classe que implementa a interface — sem tocar no código existente:
-
-```java
-// novo serviço de pagamento = nova classe, nada muda no resto
-class StripeService implements OnlinePaymentService {
-    public Double paymentFee(Double amount) { return amount * 0.025; }
-    public Double interest(Double amount, Integer months) { return (amount * months) / 100; }
-}
-```
-
-### 🔹 `LocalDate` e `DateTimeFormatter`
-
-As datas são lidas como `String` e convertidas com `DateTimeFormatter`:
-
-```java
-DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-LocalDate date = LocalDate.parse(sc.next(), fmt);
-```
-
-### 🔹 `LocalDate.plusMonths`
-
-Calcula a data de vencimento de cada parcela somando meses à data do contrato:
+**`LocalDate` e `plusMonths`** — datas lidas com `DateTimeFormatter` e vencimentos calculados somando meses:
 
 ```java
 LocalDate dueDate = contract.getDate().plusMonths(i);
-// i=1 → 25/07/2018, i=2 → 25/08/2018, i=3 → 25/09/2018
 ```
 
-### 🔹 `LocalDateTime` e `Duration.between`
-
-No sistema de aluguel, a diferença entre início e fim é calculada em minutos para determinar o valor:
-
-```java
-double minutes = Duration.between(carRental.getStart(), carRental.getFinish()).toMinutes();
-double hours = minutes / 60;
-```
-
-### 🔹 `Math.ceil`
-
-Arredonda horas ou dias para cima, garantindo que frações sejam cobradas como unidade inteira:
-
-```java
-if (hours <= 12) {
-    basicPayment = pricePerHour * Math.ceil(hours);
-} else {
-    basicPayment = pricePerDay * Math.ceil(hours / 24);
-}
-```
-
----
-
-## 🧠 Conceito Principal
-
-> A solução ruim acopla o serviço diretamente à implementação concreta. A solução boa usa uma interface como contrato — o serviço não sabe qual implementação está usando, só sabe que receberá algo que cumpre o contrato. Isso torna o sistema flexível, extensível e alinhado com os princípios **S** (responsabilidade única) e **O** (aberto para extensão, fechado para modificação) do SOLID.
+**Buffer do Scanner** — `nextInt()` e `nextDouble()` deixam o `\n` no buffer; usar `sc.nextLine()` após eles evita leituras erradas na iteração seguinte.
 
 ---
 
 ## 🛠️ Tecnologias
 
-Java 17+ · IntelliJ IDEA · Git e GitHub
+Java 25 · IntelliJ IDEA · Git e GitHub
 
 ---
 

@@ -173,7 +173,7 @@ if (hours <= 12) {
 
 ## 🛠️ Tecnologias
 
-Java 17+ · IntelliJ IDEA · Git e GitHub
+Java 25 · IntelliJ IDEA · Git e GitHub
 
 ---
 

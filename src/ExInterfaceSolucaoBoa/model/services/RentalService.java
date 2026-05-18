@@ -11,10 +11,15 @@ public class RentalService {
     private Double pricePerHour;
     private Double pricePerDay;
 
+    // inversão de controle — RentalService não sabe qual imposto vai usar
+    // só sabe que receberá algo que implementa TaxService
     private TaxService taxService;
 
 
     // Sem contrutor vazio pois quero obrigar informar esses dados quando colocar o (RentalService)
+
+    // injeção de dependência via construtor — quem decide qual TaxService usar é a Main, não essa classe
+    // sem construtor vazio pois quero obrigar informar esses dados quando instanciar RentalService
     public RentalService(Double pricePerHour, Double pricePerDay, TaxService taxService) {
         this.pricePerHour = pricePerHour;
         this.pricePerDay = pricePerDay;

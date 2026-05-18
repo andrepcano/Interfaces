@@ -12,6 +12,7 @@ public class ContractService {
     public ContractService (OnlinePaymentService onlinePaymentService) {
         this.onlinePaymentService = onlinePaymentService;
     }
+
     public void processContract(Contract contract, Integer months) {
         double basicQuota = contract.getTotalValue() / months;
         for (int i = 1; i <= months; i++) {

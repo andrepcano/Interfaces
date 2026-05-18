@@ -18,15 +18,15 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         Locale.setDefault(Locale.US);
 
-        System.out.println("Entre os dados do contrato: ");
+        System.out.println("Enter the contract date: ");
         System.out.print("Number: ");
         int number = sc.nextInt();
         System.out.print("Date (dd/MM/yyyy): ");
-        LocalDate dueDate = LocalDate.parse(sc.next(), fmt);
+        LocalDate date = LocalDate.parse(sc.next(), fmt);
         System.out.print("Value of contract: ");
         double totalValue = sc.nextDouble();
 
-        Contract obj = new Contract(number, dueDate, totalValue);
+        Contract obj = new Contract(number, date, totalValue);
 
 
         System.out.println("Enter the number of installments: ");
